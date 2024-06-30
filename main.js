@@ -1,11 +1,8 @@
 import "./style.css";
 import { transpose } from "./matrix-operators.js";
 import gameConfig from "./game-config.json";
-import javascriptLogo from "./javascript.svg";
-import viteLogo from "/vite.svg";
-import { setupCounter } from "./counter.js";
 
-// const
+// const in game-config.json
 
 // props
 let MAP = [[]]; // represents the canvas with the fixed consolidated blocks
@@ -19,36 +16,29 @@ let CURRENT_PIECE = {
 
 // statuses of the game
 let frameCount = 0;
+let speed = 20;
+let normalSpeed = null;
 let pause = false;
 let isGameOver = false;
 
-// build the canvas matrix
-for (let i = 0; i < gameConfig.ROWS; i++) {
-  for (let j = 0; j < gameConfig.COLUMNS; j++) {
-    MAP[i] = MAP[i] || [];
-    MAP[i][j] = i >= gameConfig.ROWS - 2 ? "1" : "0";
-  }
-}
-MAP[gameConfig.ROWS - 1][5] = "0";
-MAP[gameConfig.ROWS - 2][5] = "0";
-
+// the canvas setup
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-
-// for debugging:
-window.canvas = canvas;
-window.ctx = ctx;
-window.MAP = MAP;
-// todelete
 ctx.canvas.width = gameConfig.COLUMNS * gameConfig.SQUARE_SIZE;
 ctx.canvas.height = gameConfig.ROWS * gameConfig.SQUARE_SIZE;
 canvas.style.height =
   (canvas.clientWidth / gameConfig.COLUMNS) * gameConfig.ROWS + "px";
 
-// Squares functions
+// for debugging:
+// todelete
+// window.canvas = canvas;
+// window.ctx = ctx;
+// window.MAP = MAP;
+
+// Squares functions. A square is like the pixel of the Tetris canvas.
 // =================================================================
-function paintSquare(row = 0, col = 0) {
-  ctx.fillStyle = gameConfig.COLOR_SOLID;
+function paintSquare(row = 0, col = 0, color = null) {
+  ctx.fillStyle = color ? color : gameConfig.COLOR_SOLID;
   // posx, posy, width, height
   ctx.fillRect(
     col * gameConfig.SQUARE_SIZE,
@@ -64,6 +54,18 @@ function paintSquare(row = 0, col = 0) {
 function setCanvasCSSHeight() {
   const height = (canvas.clientWidth * gameConfig.ROWS) / gameConfig.COLUMNS;
   canvas.style.height = `${height}px`;
+}
+
+// build the canvas matrix
+function buildDefaultMap() {
+  for (let i = 0; i < gameConfig.ROWS; i++) {
+    for (let j = 0; j < gameConfig.COLUMNS; j++) {
+      MAP[i] = MAP[i] || [];
+      MAP[i][j] = i >= gameConfig.ROWS - 2 ? "1" : "0";
+    }
+  }
+  MAP[gameConfig.ROWS - 1][5] = "0";
+  MAP[gameConfig.ROWS - 2][5] = "0";
 }
 
 function clean() {
@@ -147,7 +149,7 @@ function paintPiece(pieceName, col = 0, row = 0, rotation = 0) {
       const colInMap = col + j;
       const rowInMap = row + i;
       if (pieceShape[i][j] === "X") {
-        paintSquare(rowInMap, colInMap);
+        paintSquare(rowInMap, colInMap, gameConfig.COLOR_PIECE);
       }
     }
   }
@@ -256,19 +258,22 @@ console.log(
 );
 
 // START THE ACTION
-setCanvasCSSHeight();
-// paintSquare(0, 0);
 
 function gameLoop() {
   frameCount = frameCount === 100 ? 1 : frameCount + 1;
 
   if (!pause) {
     if (!deleteFullRows()) {
-      if (frameCount % 10 === 0) {
+      if (frameCount % speed === 0) {
         movePiece("down");
+        if (normalSpeed) {
+          speed = normalSpeed;
+          normalSpeed = null;
+        }
       }
     }
 
+    // console.log("speed", speed);
     paint();
   }
 
@@ -282,6 +287,8 @@ function gameLoop() {
 }
 
 // init
+setCanvasCSSHeight();
+buildDefaultMap();
 generateNewPiece();
 gameLoop();
 
@@ -289,7 +296,13 @@ gameLoop();
 window.addEventListener("keydown", function (event) {
   const key = event.key; // "ArrowRight", "ArrowLeft", "ArrowUp", or "ArrowDown"
   if (key.includes("Arrow")) {
-    movePiece(key.replace("Arrow", ""));
+    const direction = key.replace("Arrow", "");
+    movePiece(direction);
+
+    if (direction === "Down") {
+      normalSpeed = speed;
+      speed = Math.floor(speed / 2) + 1;
+    }
   }
 
   if (key === " ") {

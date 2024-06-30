@@ -1,6 +1,7 @@
 {
   "COLOR_BG": "rgba(200,200,200,1)",
   "COLOR_SOLID": "rgba(0,0,0,1)",
+  "COLOR_PIECE": "rgba(200,0,150,1)",
   "ROWS": 30,
   "COLUMNS": 20,
   "SQUARE_SIZE": 100,
