@@ -17,7 +17,7 @@ let CURRENT_PIECE = {
 // statuses of the game
 let frameCount = 0;
 let speed = 20;
-let normalSpeed = null;
+let normalSpeed = speed;
 let pause = false;
 let isGameOver = false;
 
@@ -266,9 +266,10 @@ function gameLoop() {
     if (!deleteFullRows()) {
       if (frameCount % speed === 0) {
         movePiece("down");
-        if (normalSpeed) {
+
+        console.log("frame. Speed", speed);
+        if (normalSpeed !== speed) {
           speed = normalSpeed;
-          normalSpeed = null;
         }
       }
     }
@@ -300,8 +301,7 @@ window.addEventListener("keydown", function (event) {
     movePiece(direction);
 
     if (direction === "Down") {
-      normalSpeed = speed;
-      speed = Math.floor(speed / 2) + 1;
+      speed = 5;
     }
   }
 
