@@ -1,0 +1,13 @@
+#app {
+
+  border: 1px solid lightcoral;
+  max-width: 500px;
+  width: 100%;
+
+  canvas {
+    background: lightgray;
+    border: 10px solid lightblue;
+    width: 100%;
+    max-width: 400px;
+  }
+}

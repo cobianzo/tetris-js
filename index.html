@@ -7,7 +7,16 @@
     <title>Vite App</title>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/main.js"></script>
+
+    <!-- Everything is created in this app container -->
+    <div id="app">
+
+      <div id="canvas-wrapper">
+        <canvas id="canvas" width="100%"></canvas>
+      </div>
+
+    </div>
+    <script type="module" defer src="/main.js"></script>
+
   </body>
 </html>
