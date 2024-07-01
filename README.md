@@ -1,6 +1,7 @@
 # Tetris in JS
 
-Simple Tetris game made in vanilla Js, starting with Vite template.
+Simple Tetris game made in vanilla Js, starting with Vite template.  
+Everything insteresting in this project is in `main.js`.
 
 ## Development:
 
